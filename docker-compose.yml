@@ -1,4 +1,4 @@
-version: '3.0'
+version: '3.8'
 
 services:
 #  main:
@@ -20,18 +20,24 @@ services:
 #    networks:
 #      - postgres
 
-  postgres:
-    container_name: postgres
+  postgres_db:
+    container_name: postgres_db
     image: postgres:14.0-alpine
     env_file:
       - .dev.env
-    ports:
-      - 5432:5432
+    environment:
+      - POSTGRES_USER=${TYPEORM_USERNAME}
+      - POSTGRES_PASSWORD=${TYPEORM_PASSWORD}
+      - POSTGRES_DB=${TYPEORM_DATABASE}
+      - POSTGRES_HOST=${DB_HOST}
+      - PGPORT=${TYPEORM_PORT}
+#    ports:
+#      - 5432:5432
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     restart: always
     networks:
-      - postgres
+      - db_env
 
   pgadmin:
       container_name: pgadmin_container
@@ -41,14 +47,16 @@ services:
         PGADMIN_DEFAULT_PASSWORD: "postgre"
         PGADMIN_CONFIG_SERVER_MODE: "False"
       volumes:
-        - :/var/lib/pgadmin
+        - pgadmin:/var/lib/pgadmin
       ports:
         - "5050:80"
       restart: always
+      depends_on:
+        - postgres_db
       networks:
-        - postgres
+        - db_env
 networks:
-  postgres:
+  db_env:
     driver: bridge
 
 

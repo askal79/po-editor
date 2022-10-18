@@ -4,7 +4,6 @@
   "description": "po-editor project",
   "author": "kalashnikov",
   "private": true,
-  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",

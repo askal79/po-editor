@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DbConfigService } from './config/db-config.service';
+import { RolesModule } from '@app/roles/roles.module';
+// import ormconfig from '@app/ormconfig';
 
 @Module({
   imports: [
@@ -8,26 +11,31 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       isGlobal: true,
       envFilePath: `.${process.env.NODE_ENV}.env`,
     }),
+    // TypeOrmModule.forRoot(ormconfig),
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (
+    //     config: ConfigService,
+    //   ): Promise<TypeOrmModuleOptions> | TypeOrmModuleOptions => ({
+    //     type: config.get<'aurora-mysql'>('TYPEORM_CONNECTION'),
+    //     host: config.get<string>('DB_HOST'),
+    //     username: config.get<string>('TYPEORM_USERNAME'),
+    //     password: config.get<string>('TYPEORM_PASSWORD'),
+    //     database: config.get<string>('TYPEORM_DATABASE'),
+    //     port: config.get<number>('TYPEORM_PORT'),
+    //     entities: [__dirname + './**/*.entity{.ts,.js}'],
+    //     synchronize: true,
+    //     // autoLoadEntities: true,
+    //     logging: true,
+    //   }),
+    // }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (
-        config: ConfigService,
-      ): Promise<Record<string, any>> => ({
-        type: config.get<'aurora-data-api'>('TYPEORM_CONNECTION'),
-        host: config.get<string>('TYPEORM_HOST'),
-        username: config.get<string>('TYPEORM_USERNAME'),
-        password: config.get<string>('TYPEORM_PASSWORD'),
-        database: config.get<string>('TYPEORM_DATABASE'),
-        port: config.get<number>('TYPEORM_PORT'),
-        entities: [__dirname + 'dist/**/*.entity{.ts,.js}'],
-        synchronize: true,
-        autoLoadEntities: true,
-        logging: true,
-      }),
+      useClass: DbConfigService,
+      inject: [DbConfigService],
     }),
+    RolesModule,
   ],
-  controllers: [],
   providers: [],
 })
 export class AppModule {}

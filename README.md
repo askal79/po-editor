@@ -2,6 +2,7 @@
 
 PO-editor project
 node requirements - 16.x
+master password for pga admin - postgre
 
 ## Installation
 

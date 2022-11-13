@@ -1,35 +1,27 @@
 ## Description
 
 PO-editor project
+node requirements - 16.x
+master password for pga admin - postgre
 
 ## Installation
 
 ```bash
-$ npm install
+$ yarn install
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+dcoker-compose up
+$ yarn start
 
 # watch mode
-$ npm run start:dev
+dcoker-compose up
+$ yarn start:dev
 
 # production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+dcoker-compose up
+$ yarn start:prod
 ```

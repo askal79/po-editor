@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DbConfigService } from '../config/db-config.service';
+import { DbConfigService } from './config/db-config.service';
+import { RolesModule } from '@app/roles/roles.module';
 // import ormconfig from '@app/ormconfig';
 
 @Module({
@@ -33,8 +34,8 @@ import { DbConfigService } from '../config/db-config.service';
       useClass: DbConfigService,
       inject: [DbConfigService],
     }),
+    RolesModule,
   ],
-  controllers: [],
   providers: [],
 })
 export class AppModule {}

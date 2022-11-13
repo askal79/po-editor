@@ -4,6 +4,7 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
@@ -21,14 +22,13 @@ export class TypeormExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     let errors = (exception as any).message.message;
-    let code = 'HttpException';
+    const code = 'HttpException';
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
 
-    console.log(exception);
+    // console.log(2222, exception);
 
     switch (exception.constructor) {
       case ValidationException: // this is another TypeOrm error
-        console.log(exception);
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         errors = (exception as any).messages?.errors;
         break;
@@ -38,35 +38,34 @@ export class TypeormExceptionFilter implements ExceptionFilter {
       case QueryFailedError: // this is a TypeOrm error
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         errors = [
-          (exception as any).detail.replace(
+          (exception as any)?.detail.replace(
             /^Key \((.*)\)=\((.*)\) (.*)/,
             "This '$1' - '$2' already exists.",
           ),
         ];
-        code = (exception as any).code;
+        // code = (exception as any).code;
         break;
       case EntityNotFoundError: // this is another TypeOrm error
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         errors = [(exception as EntityNotFoundError).message];
-        code = (exception as any).code;
+        // code = (exception as any).code;
         break;
 
       case CannotCreateEntityIdMapError: // and another
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         errors = [(exception as CannotCreateEntityIdMapError).message];
-        code = (exception as any).code;
+        // code = (exception as any).code;
+        break;
+      case NotFoundException: // and another
+        status = HttpStatus.NOT_FOUND;
+        errors = [(exception as NotFoundException).message];
+        // code = (exception as any).status;
         break;
       default:
         status = (exception as any).status;
         errors = [(exception as any).message];
-        code = (exception as any).code;
+      // code = (exception as any).code;
     }
-    // if (exception as ValidationException) {
-    //   response
-    //     .status((exception as any).status)
-    //     .json((exception as any).message);
-    //   return;
-    // }
     response
       .status(status)
       .json(GlobalResponseError(status, errors, code, request));

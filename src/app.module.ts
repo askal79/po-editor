@@ -1,8 +1,13 @@
-import { Module } from '@nestjs/common';
+import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DbConfigService } from './config/db-config.service';
 import { RolesModule } from '@app/roles/roles.module';
+import { ApplicationsModule } from './applications/applications.module';
+import { UsersModule } from './users/users.module';
+import { BaseSetupModule } from '@app/base-setup/base-setup.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ResponseDataFormatterInterceptor } from '@app/shared/interceptors/response-data-transform.interceptor';
 // import ormconfig from '@app/ormconfig';
 
 @Module({
@@ -35,7 +40,20 @@ import { RolesModule } from '@app/roles/roles.module';
       inject: [DbConfigService],
     }),
     RolesModule,
+    ApplicationsModule,
+    UsersModule,
+    BaseSetupModule,
   ],
-  providers: [],
+  providers: [
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: ResponseDataFormatterInterceptor,
+    // },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: ClassSerializerInterceptor,
+    // },
+  ],
+  controllers: [],
 })
 export class AppModule {}

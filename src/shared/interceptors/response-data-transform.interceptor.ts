@@ -23,6 +23,7 @@ export class ResponseDataFormatterInterceptor<T>
       map((data) => {
         return {
           data,
+          meta: {},
         };
       }),
     );

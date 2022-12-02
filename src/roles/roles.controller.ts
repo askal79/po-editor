@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   UseFilters,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -15,9 +16,13 @@ import { RolesService } from '@app/roles/roles.service';
 import { RolesEntity } from '@app/roles/roles.entity';
 import { CreateRoleDto } from '@app/roles/dto/create-role.dto';
 import { ValidationPipe } from '@app/shared/pipes/validation.pipe';
+import { Roles } from '@app/shared/decorators/roles.decorator';
+import { RolesGuard } from '@app/shared/guards/roles.guard';
 // import { TypeormExceptionFilter } from '@app/shared/exception/typeorm-exception.filter';
 
-@ApiTags('roles')
+@ApiTags('Roles')
+@Roles('admin')
+@UseGuards(RolesGuard)
 @Controller('roles')
 export class RolesController {
   constructor(private rolesService: RolesService) {}

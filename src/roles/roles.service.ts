@@ -1,13 +1,4 @@
-import {
-  ConflictException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesEntity } from '@app/roles/roles.entity';
 import { EntityNotFoundError, Repository } from 'typeorm';

@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRolesEnum } from '@app/shared/enums/roles.enum';
 import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
-import { UsersEntity } from '@app/users/users.entity';
 
 export class CreateRoleDto {
   @ApiProperty({
@@ -16,8 +15,4 @@ export class CreateRoleDto {
   @IsString()
   @IsOptional()
   readonly description?: string;
-
-  // @ApiProperty({ example: ['1'], description: 'connected users' })
-  // @IsArray()
-  // readonly users?: UsersEntity[];
 }

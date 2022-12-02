@@ -34,7 +34,7 @@ export class RolesEntity {
   @Column({ nullable: true })
   description: string;
 
-  // @ApiModelProperty({ type: () => UsersEntity, isArray: true })
+  @ApiModelProperty({ type: () => UsersEntity, isArray: true })
   @OneToMany(() => UsersEntity, (user) => user)
   users?: UsersEntity[];
 

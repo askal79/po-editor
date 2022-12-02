@@ -1,7 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRolesEnum } from '@app/shared/enums/roles.enum';
-import { IsEnum, IsString } from 'class-validator';
+import { UsersEntity } from '@app/users/users.entity';
+import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 
 @Entity({ name: 'roles' })
 export class RolesEntity {
@@ -25,4 +33,14 @@ export class RolesEntity {
   })
   @Column({ nullable: true })
   description: string;
+
+  @ApiModelProperty({ type: () => UsersEntity, isArray: true })
+  @OneToMany(() => UsersEntity, (user) => user)
+  users?: UsersEntity[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -2,8 +2,11 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
+  ForbiddenException,
   HttpException,
   HttpStatus,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
@@ -24,49 +27,65 @@ export class TypeormExceptionFilter implements ExceptionFilter {
     let code = 'HttpException';
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
 
-    console.log(exception);
+    // console.log('555', exception);
 
     switch (exception.constructor) {
       case ValidationException: // this is another TypeOrm error
-        console.log(exception);
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         errors = (exception as any).messages?.errors;
         break;
       case HttpException:
         status = (exception as HttpException).getStatus();
+        errors = [
+          (exception as any).response?.errors ||
+            (exception as any).response?.message,
+        ];
         break;
       case QueryFailedError: // this is a TypeOrm error
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         errors = [
-          (exception as any).detail.replace(
+          (exception as any)?.detail.replace(
             /^Key \((.*)\)=\((.*)\) (.*)/,
             "This '$1' - '$2' already exists.",
           ),
         ];
-        code = (exception as any).code;
+        // code = (exception as any).code;
         break;
       case EntityNotFoundError: // this is another TypeOrm error
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         errors = [(exception as EntityNotFoundError).message];
-        code = (exception as any).code;
+        // code = (exception as any).code;
         break;
 
       case CannotCreateEntityIdMapError: // and another
         status = HttpStatus.UNPROCESSABLE_ENTITY;
         errors = [(exception as CannotCreateEntityIdMapError).message];
-        code = (exception as any).code;
+        // code = (exception as any).code;
+        break;
+      case NotFoundException: // and another
+        status = HttpStatus.NOT_FOUND;
+        errors = [(exception as NotFoundException).message];
+        // code = (exception as any).status;
+        break;
+      case UnauthorizedException: // and another
+        status = HttpStatus.UNAUTHORIZED;
+        errors = ['please authorize in application'];
+        code = (exception as any).status;
+        break;
+      case ForbiddenException: // and another
+        status = HttpStatus.FORBIDDEN;
+        errors = [{ message: 'forbidden by application guard' }];
+        code = (exception as any).status;
         break;
       default:
         status = (exception as any).status;
-        errors = [(exception as any).message];
-        code = (exception as any).code;
+        errors = [(exception as any).message] || [
+          (exception as any).response?.errors ||
+            (exception as any).response?.message,
+        ];
+      // code = (exception as any).code;
     }
-    // if (exception as ValidationException) {
-    //   response
-    //     .status((exception as any).status)
-    //     .json((exception as any).message);
-    //   return;
-    // }
+
     response
       .status(status)
       .json(GlobalResponseError(status, errors, code, request));

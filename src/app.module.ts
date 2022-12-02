@@ -1,8 +1,21 @@
-import { Module } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DbConfigService } from './config/db-config.service';
+import { DbConfigService } from './database/config/db-config.service';
 import { RolesModule } from '@app/roles/roles.module';
+import { ApplicationsModule } from '@app/applications/applications.module';
+import { UsersModule } from '@app/users/users.module';
+// import { BaseSetupModule } from '@app/base-setup/base-setup.module';
+// import { APP_INTERCEPTOR } from '@nestjs/core';
+// import { ResponseDataFormatterInterceptor } from '@app/shared/interceptors/response-data-transform.interceptor';
+import { AuthModule } from './auth/auth.module';
+// import { updateTokenMiddleware } from '@app/shared/middleware/update-token.middleware';
 // import ormconfig from '@app/ormconfig';
 
 @Module({
@@ -35,7 +48,29 @@ import { RolesModule } from '@app/roles/roles.module';
       inject: [DbConfigService],
     }),
     RolesModule,
+    ApplicationsModule,
+    UsersModule,
+    // BaseSetupModule,
+    AuthModule,
   ],
-  providers: [],
+  providers: [
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: ResponseDataFormatterInterceptor,
+    // },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: ClassSerializerInterceptor,
+    // },
+  ],
+  controllers: [],
 })
 export class AppModule {}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer
+//       .apply(updateTokenMiddleware)
+//       .exclude({ path: 'auth', method: RequestMethod.ALL }, 'auth/(.*)')
+//       .forRoutes('*');
+//   }
+// }

@@ -1,16 +1,7 @@
-import {
-  ConflictException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesEntity } from '@app/roles/roles.entity';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { CreateRoleDto } from '@app/roles/dto/create-role.dto';
 
 @Injectable()
@@ -30,13 +21,21 @@ export class RolesService {
     return role;
   }
 
+  async findRole(name: string): Promise<RolesEntity> {
+    const role = await this.rolesRepository.findOne({
+      select: [],
+      where: { name: name },
+    });
+    return role;
+  }
+
   async removeRole(id: number): Promise<any> {
     const role = await this.rolesRepository.findOne({
       select: [],
       where: { id: id },
     });
     if (!role) {
-      throw new NotFoundException("Not found. Roles doesn't exist");
+      throw new EntityNotFoundError(RolesEntity, id);
     }
     await this.rolesRepository.delete(id);
     return role;
